@@ -1,6 +1,6 @@
 import { failed, Result, succeed } from 'src/core/result';
-import { IUserRepository } from '../repositories/user_repository';
-import { UserNotFoundError } from '../errors/user_not_found';
+import { IUserRepository } from '../../repositories/user_repository';
+import { UserNotFoundError } from '../../errors/user_not_found';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()

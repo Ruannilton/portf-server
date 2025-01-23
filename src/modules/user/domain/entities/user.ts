@@ -1,9 +1,12 @@
+import { Project } from './project';
+
 export class User {
   id: string;
   name: string;
   email: string;
   linkedIn: string | null;
   github: string | null;
+  projects: Project[];
 
   constructor(name: string, email: string, part: Partial<User>) {
     this.email = email;

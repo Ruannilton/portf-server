@@ -24,6 +24,7 @@ export class UserRepository implements IUserRepository {
       github: res.github,
       linkedIn: res.linkedin,
       name: res.name,
+      projects: [],
     };
 
     const result = succeed(userCreated);
@@ -42,6 +43,7 @@ export class UserRepository implements IUserRepository {
       github: user.github,
       linkedIn: user.linkedin,
       name: user.name,
+      projects: [],
     };
   }
 
@@ -50,7 +52,6 @@ export class UserRepository implements IUserRepository {
   }
 
   async UpdateUser(id: string, updatedUser: User): Promise<void> {
-    console.log('Update', updatedUser);
     await this.prisma.user.update({
       where: { id: id },
       data: {

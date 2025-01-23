@@ -14,11 +14,24 @@ datasource db {
 }
 
 model User {
-  id         String   @id @default(uuid())
+  id         String    @id @default(uuid())
   name       String
   email      String
   linkedin   String?
   github     String?
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt()
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt()
+  projects   Project[]
+}
+
+model Project {
+  id              Int       @id @default(autoincrement())
+  name            String
+  brief           String
+  description     String?
+  repository_link String?
+  startDate       DateTime?
+  endDate         DateTime?
+  User            User      @relation(fields: [userId], references: [id])
+  userId          String
 }

@@ -8,21 +8,21 @@ import {
   Put,
   Res,
 } from '@nestjs/common';
-import { GetUserUseCase } from '../../domain/use_cases/get_user';
+import { GetUserUseCase } from '../../domain/use_cases/user/get_user';
 import { Response } from 'express';
 import { getError, getValue, isFailure } from 'src/core/result';
-import { DeleteUserUseCase } from '../../domain/use_cases/delete_user';
+import { DeleteUserUseCase } from '../../domain/use_cases/user/delete_user';
 import {
   CreateUserMessage,
   CreateUserUseCase,
-} from 'src/modules/user/domain/use_cases/create_user';
-import { CreateUserRequest } from '../dtos/CreateUserRequest';
-import { CreateUseReponse } from '../dtos/CreateUseReponse';
+} from 'src/modules/user/domain/use_cases/user/create_user';
+import { CreateUserRequest } from './CreateUserRequest';
+import { CreateUseReponse } from './CreateUseReponse';
 import {
   UpateUserMessage,
   UpdateUserUseCase,
-} from 'src/modules/user/domain/use_cases/update_user';
-import { UpdateUserRequest } from '../dtos/UpdateUserRequest';
+} from 'src/modules/user/domain/use_cases/user/update_user';
+import { UpdateUserRequest } from './UpdateUserRequest';
 
 @Controller('/users')
 export class UserController {

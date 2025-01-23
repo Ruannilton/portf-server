@@ -1,6 +1,6 @@
 import { Result, isSuccess } from 'src/core/result';
-import { User } from '../entities/user';
-import { IUserRepository } from '../repositories/user_repository';
+import { User } from '../../entities/user';
+import { IUserRepository } from '../../repositories/user_repository';
 import { Injectable } from '@nestjs/common';
 
 export class CreateUserMessage {
