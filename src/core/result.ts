@@ -32,13 +32,17 @@ export function isFailure<T = void>(res: Result<T>): boolean {
   return res.type == 'Failure';
 }
 
-export function getError<T = void>(result: Result<T>): Error | null {
-  if (result.type == 'Success') return null;
+export function getError<T = void>(result: Result<T>): Error {
+  if (result.type == 'Success') {
+    throw new Error('Cannot get error from a success result');
+  }
   return result.error;
 }
 
-export function getValue<T = void>(result: Result<T>): T | null {
-  if (result.type == 'Failure') return null;
+export function getValue<T = void>(result: Result<T>): T {
+  if (result.type == 'Failure') {
+    throw new Error('Cannot get value from a failed result');
+  }
   return result.data;
 }
 

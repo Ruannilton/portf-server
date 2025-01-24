@@ -1,12 +1,12 @@
 import { Result, succeed } from 'src/core/result';
 import { Project } from '../../domain/entities/project';
 import { IProjectRepository } from '../../domain/repositories/IProjectRepository';
-import { PrismaService } from '../db/prisma.service';
+import { UserPrismaService } from '../db/prisma.service';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class projectRepository implements IProjectRepository {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: UserPrismaService) {}
 
   public async AddProject(project: Project): Promise<Result<Project>> {
     const res = await this.prisma.project.create({

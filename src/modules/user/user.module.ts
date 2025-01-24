@@ -6,7 +6,7 @@ import { GetUserUseCase } from './domain/use_cases/user/get_user';
 import { UpdateUserUseCase } from './domain/use_cases/user/update_user';
 import { IUserRepository } from './domain/repositories/user_repository';
 import { UserRepository } from 'src/modules/user/infra/repositories/user_repository';
-import { PrismaService } from './infra/db/prisma.service';
+import { UserPrismaService } from './infra/db/prisma.service';
 import { IProjectRepository } from './domain/repositories/IProjectRepository';
 import { projectRepository } from './infra/repositories/project_repository';
 import { CreateProjectUseCase } from './domain/use_cases/project/create_project';
@@ -19,7 +19,7 @@ import { ProjectsController } from './presentation/project/projects_controller';
   imports: [],
   controllers: [UserController, ProjectsController],
   providers: [
-    PrismaService,
+    UserPrismaService,
     CreateUserUseCase,
     DeleteUserUseCase,
     GetUserUseCase,
@@ -37,5 +37,6 @@ import { ProjectsController } from './presentation/project/projects_controller';
       useClass: projectRepository,
     },
   ],
+  exports: [CreateUserUseCase, GetUserUseCase],
 })
 export class UserModule {}

@@ -23,8 +23,10 @@ import {
   UpdateUserUseCase,
 } from 'src/modules/user/domain/use_cases/user/update_user';
 import { UpdateUserRequest } from './UpdateUserRequest';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
 @Controller('/users')
+@ApiBearerAuth()
 export class UserController {
   constructor(
     private readonly createUserUseCase: CreateUserUseCase,
@@ -57,7 +59,7 @@ export class UserController {
     }
 
     const user = getValue(addResult);
-    const userResponse = new CreateUseReponse(user!);
+    const userResponse = new CreateUseReponse(user);
 
     response.status(201).json(userResponse);
   }

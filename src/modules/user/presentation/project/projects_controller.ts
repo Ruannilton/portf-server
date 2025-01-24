@@ -22,8 +22,10 @@ import { Response } from 'express';
 import { CreateProjectRequest } from './create-project-request';
 import { UpdateProjectRequest } from './UpdateProjectRequest';
 import { getError, getValue, isFailure } from 'src/core/result';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
 @Controller()
+@ApiBearerAuth()
 export class ProjectsController {
   constructor(
     private readonly createProjectUseCase: CreateProjectUseCase,
