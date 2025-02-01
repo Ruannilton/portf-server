@@ -13,6 +13,7 @@ import { DeleteProjectUseCase } from './domain/use_cases/project/delete_project'
 import { GetProjectsUseCase } from './domain/use_cases/project/get_projects';
 import { UpdateProjectUseCase } from './domain/use_cases/project/update_project';
 import { ProjectsController } from './presentation/project/projects_controller';
+import { GetProjectUseCase } from './domain/use_cases/project/get_project';
 
 @Module({
   imports: [],
@@ -25,6 +26,7 @@ import { ProjectsController } from './presentation/project/projects_controller';
     CreateProjectUseCase,
     DeleteProjectUseCase,
     GetProjectsUseCase,
+    GetProjectUseCase,
     UpdateProjectUseCase,
     {
       provide: IUserRepository,
