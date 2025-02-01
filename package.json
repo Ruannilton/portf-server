@@ -24,7 +24,7 @@
     "migrate-apply:users": "prisma migrate deploy --schema=prisma/users.schema.prisma"
   },
   "dependencies": {
-    "@libsql/client": "^0.14.0",
+    "@libsql/client": "^0.8.1",
     "@nestjs/common": "^11.0.1",
     "@nestjs/config": "^4.0.0",
     "@nestjs/core": "^11.0.1",
