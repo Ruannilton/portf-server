@@ -1,3 +1,5 @@
+import { Federation } from '../models/federation';
+
 export abstract class IFederationRepository {
   public abstract getUserId(
     provider: string,
@@ -14,4 +16,9 @@ export abstract class IFederationRepository {
     provider: string,
     providerRef: string,
   ): Promise<void>;
+
+  public abstract getFederation(
+    provider: string,
+    userId: string,
+  ): Promise<Federation | null>;
 }

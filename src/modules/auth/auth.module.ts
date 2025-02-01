@@ -11,6 +11,7 @@ import { FederationRepository } from './infra/repositories/federationRepository'
 import { JwtModule } from '@nestjs/jwt';
 import { LoginUserUseCase } from './domain/use_cases/loginUserUseCase';
 import { AuthGuard } from './domain/guards/authGuard';
+import { GetGitHubAccountUseCase } from './domain/use_cases/getGitHubAccountUseCase';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { AuthGuard } from './domain/guards/authGuard';
   providers: [
     GitHubStrategy,
     CreateGitHubFederatedUserUseCase,
+    GetGitHubAccountUseCase,
     FindFederatedUserUseCase,
     {
       provide: IFederationRepository,

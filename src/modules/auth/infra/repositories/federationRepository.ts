@@ -3,6 +3,7 @@ import { IFederationRepository } from '../../domain/repository/federationReposit
 import { createClient } from '@libsql/client';
 import { PrismaLibSQL } from '@prisma/adapter-libsql';
 import { PrismaClient } from '@prisma/client';
+import { Federation } from '../../domain/models/federation';
 
 @Injectable()
 export class FederationRepository implements IFederationRepository {
@@ -16,6 +17,25 @@ export class FederationRepository implements IFederationRepository {
 
     const adapter = new PrismaLibSQL(libsql);
     this.prisma = new PrismaClient({ adapter });
+  }
+  public async getFederation(
+    provider: string,
+    userId: string,
+  ): Promise<Federation | null> {
+    const fed = await this.prisma.federation.findFirst({
+      where: { provider, userId },
+    });
+
+    if (fed != null) {
+      const response: Federation = {
+        provider: fed.provider,
+        providerRef: fed.providerRef,
+        userId: fed.userId,
+      };
+      return response;
+    }
+
+    return null;
   }
 
   public async getUserId(

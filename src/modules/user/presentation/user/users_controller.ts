@@ -78,6 +78,7 @@ export class UserController {
     if (isFailure(updateResult)) {
       const err = getError(updateResult);
       response.status(400).json(err);
+      return;
     }
 
     response.sendStatus(200);
@@ -90,6 +91,7 @@ export class UserController {
     if (isFailure(deleteResult)) {
       const err = getError(deleteResult);
       response.status(400).json(err);
+      return;
     }
 
     response.sendStatus(200);

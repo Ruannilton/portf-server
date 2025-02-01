@@ -1,4 +1,12 @@
-import { Controller, Get, Header, Req, Res, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Header,
+  Param,
+  Req,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import { GitHubAuthGuard } from '../domain/guards/githubAuthGuard';
 import { GitHubUser } from '../domain/models/github_user';
 import { FindFederatedUserUseCase } from '../domain/use_cases/findFederatedUserUseCase';
@@ -9,6 +17,7 @@ import { Response } from 'express';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { GetUserUseCase } from 'src/modules/user/domain/use_cases/user/get_user';
 import { getError, getValue, isFailure } from 'src/core/result';
+import { GetGitHubAccountUseCase } from '../domain/use_cases/getGitHubAccountUseCase';
 
 @Controller('auth')
 export class AuthController {
@@ -17,7 +26,9 @@ export class AuthController {
     private readonly createGitHubFederationUseCase: CreateGitHubFederatedUserUseCase,
     private readonly loginUseCase: LoginUserUseCase,
     private readonly getUser: GetUserUseCase,
+    private readonly getGitHubAccount: GetGitHubAccountUseCase,
   ) {}
+
   @Get('github')
   @UseGuards(GitHubAuthGuard)
   @Header('Access-Control-Allow-Origin', '*')
@@ -71,8 +82,23 @@ export class AuthController {
     if (isFailure(userResult)) {
       const err = getError(userResult);
       response.status(404).json(err);
+      return;
     }
     const user = getValue(userResult);
     response.status(200).json(user);
+  }
+
+  @Get('/users/:id/github')
+  async getGithubAccount(@Param('id') id: string, @Res() response: Response) {
+    const result = await this.getGitHubAccount.execute(id);
+
+    if (isFailure(result)) {
+      const err = getError(result);
+      response.status(404).json(err);
+      return;
+    }
+
+    const account = getValue(result);
+    response.status(200).json(account);
   }
 }

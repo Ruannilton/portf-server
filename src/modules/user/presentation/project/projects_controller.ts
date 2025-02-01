@@ -46,6 +46,7 @@ export class ProjectsController {
     if (isFailure(result)) {
       const err = getError(result);
       response.status(400).json(err);
+      return;
     }
 
     const value = getValue(result);
@@ -63,6 +64,7 @@ export class ProjectsController {
     if (isFailure(result)) {
       const err = getError(result);
       response.status(400).json(err);
+      return;
     }
 
     const value = getValue(result);
@@ -86,6 +88,7 @@ export class ProjectsController {
     if (isFailure(result)) {
       const err = getError(result);
       response.status(400).json(err);
+      return;
     }
 
     const value = getValue(result);
@@ -108,6 +111,7 @@ export class ProjectsController {
     if (isFailure(result)) {
       const err = getError(result);
       response.status(400).json(err);
+      return;
     }
 
     response.sendStatus(200);
@@ -123,6 +127,7 @@ export class ProjectsController {
     if (isFailure(result)) {
       const err = getError(result);
       response.status(400).json(err);
+      return;
     }
 
     response.sendStatus(200);
