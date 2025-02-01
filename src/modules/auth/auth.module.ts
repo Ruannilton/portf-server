@@ -3,7 +3,6 @@ import { PassportModule } from '@nestjs/passport';
 import { GitHubStrategy } from './domain/strategies/github.strategy';
 import { AuthController } from './presentation/auth.controller';
 
-import { AuthPrismaService } from './infra/db/prisma.service';
 import { CreateGitHubFederatedUserUseCase } from './domain/use_cases/createGitHubFederatedUserUseCase';
 import { FindFederatedUserUseCase } from './domain/use_cases/findFederatedUserUseCase';
 import { UserModule } from '../user/user.module';
@@ -24,7 +23,6 @@ import { AuthGuard } from './domain/guards/authGuard';
   ],
   controllers: [AuthController],
   providers: [
-    AuthPrismaService,
     GitHubStrategy,
     CreateGitHubFederatedUserUseCase,
     FindFederatedUserUseCase,

@@ -32,7 +32,7 @@ export class CreateGitHubFederatedUserUseCase {
       federationRef,
       user.id,
     );
-    console.log('New user created:', user);
+
     return user;
   }
 }

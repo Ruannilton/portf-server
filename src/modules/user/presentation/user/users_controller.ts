@@ -42,6 +42,7 @@ export class UserController {
     if (isFailure(getResult)) {
       const err = getError(getResult);
       response.status(400).json(err);
+      return;
     }
 
     const value = getValue(getResult);
@@ -56,6 +57,7 @@ export class UserController {
     if (isFailure(addResult)) {
       const err = getError(addResult);
       response.status(400).json(err);
+      return;
     }
 
     const user = getValue(addResult);
@@ -70,7 +72,6 @@ export class UserController {
     @Body() body: UpdateUserRequest,
     @Res() response: Response,
   ) {
-    console.log('body:', body);
     const message: UpateUserMessage = { id: id, ...body };
     const updateResult = await this.updateUserUseCase.execute(message);
 

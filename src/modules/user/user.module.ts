@@ -6,7 +6,6 @@ import { GetUserUseCase } from './domain/use_cases/user/get_user';
 import { UpdateUserUseCase } from './domain/use_cases/user/update_user';
 import { IUserRepository } from './domain/repositories/user_repository';
 import { UserRepository } from 'src/modules/user/infra/repositories/user_repository';
-import { UserPrismaService } from './infra/db/prisma.service';
 import { IProjectRepository } from './domain/repositories/IProjectRepository';
 import { projectRepository } from './infra/repositories/project_repository';
 import { CreateProjectUseCase } from './domain/use_cases/project/create_project';
@@ -19,7 +18,6 @@ import { ProjectsController } from './presentation/project/projects_controller';
   imports: [],
   controllers: [UserController, ProjectsController],
   providers: [
-    UserPrismaService,
     CreateUserUseCase,
     DeleteUserUseCase,
     GetUserUseCase,

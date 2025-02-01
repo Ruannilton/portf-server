@@ -1,12 +1,24 @@
 import { Result, succeed } from 'src/core/result';
 import { Project } from '../../domain/entities/project';
 import { IProjectRepository } from '../../domain/repositories/IProjectRepository';
-import { UserPrismaService } from '../db/prisma.service';
 import { Injectable } from '@nestjs/common';
+import { createClient } from '@libsql/client';
+import { PrismaLibSQL } from '@prisma/adapter-libsql';
+import { PrismaClient } from '@prisma/client';
 
 @Injectable()
 export class projectRepository implements IProjectRepository {
-  constructor(private readonly prisma: UserPrismaService) {}
+  private readonly prisma: PrismaClient;
+
+  constructor() {
+    const libsql = createClient({
+      url: `${process.env.TURSO_DATABASE_URL}`,
+      authToken: `${process.env.TURSO_AUTH_TOKEN}`,
+    });
+
+    const adapter = new PrismaLibSQL(libsql);
+    this.prisma = new PrismaClient({ adapter });
+  }
 
   public async AddProject(project: Project): Promise<Result<Project>> {
     const res = await this.prisma.project.create({

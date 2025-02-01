@@ -1,10 +1,22 @@
 import { Injectable } from '@nestjs/common';
 import { IFederationRepository } from '../../domain/repository/federationRepository';
-import { AuthPrismaService } from '../db/prisma.service';
+import { createClient } from '@libsql/client';
+import { PrismaLibSQL } from '@prisma/adapter-libsql';
+import { PrismaClient } from '@prisma/client';
 
 @Injectable()
 export class FederationRepository implements IFederationRepository {
-  constructor(private readonly prisma: AuthPrismaService) {}
+  private readonly prisma: PrismaClient;
+
+  constructor() {
+    const libsql = createClient({
+      url: `${process.env.TURSO_DATABASE_URL}`,
+      authToken: `${process.env.TURSO_AUTH_TOKEN}`,
+    });
+
+    const adapter = new PrismaLibSQL(libsql);
+    this.prisma = new PrismaClient({ adapter });
+  }
 
   public async getUserId(
     provider: string,
