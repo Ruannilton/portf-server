@@ -7,4 +7,5 @@ export class Project {
   repository_link: string | null;
   startDate: Date | null;
   endDate: Date | null;
+  keys: string[];
 }

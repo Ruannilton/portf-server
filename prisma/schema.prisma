@@ -36,4 +36,5 @@ model Project {
   endDate         DateTime?
   User            User      @relation(fields: [userId], references: [id])
   userId          String
+  keys            Json
 }

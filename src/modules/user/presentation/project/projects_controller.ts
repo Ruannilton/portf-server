@@ -23,6 +23,7 @@ import { CreateProjectRequest } from './create-project-request';
 import { UpdateProjectRequest } from './UpdateProjectRequest';
 import { getError, getValue, isFailure } from 'src/core/result';
 import { ApiBearerAuth } from '@nestjs/swagger';
+import { GetProjectUseCase } from '../../domain/use_cases/project/get_project';
 
 @Controller()
 @ApiBearerAuth()
@@ -32,6 +33,7 @@ export class ProjectsController {
     private readonly updateProjectUseCase: UpdateProjectUseCase,
     private readonly getProjectsUseCase: GetProjectsUseCase,
     private readonly deleteProjectUseCase: DeleteProjectUseCase,
+    private readonly getProjectUseCase: GetProjectUseCase,
   ) {}
 
   @Get('/users/:userId/projects')
@@ -40,6 +42,23 @@ export class ProjectsController {
     @Res() response: Response,
   ) {
     const result = await this.getProjectsUseCase.execute(userId);
+
+    if (isFailure(result)) {
+      const err = getError(result);
+      response.status(400).json(err);
+    }
+
+    const value = getValue(result);
+
+    response.status(200).json(value);
+  }
+
+  @Get('/projects/:projectId')
+  async getProject(
+    @Param('projectId') projectId: number,
+    @Res() response: Response,
+  ) {
+    const result = await this.getProjectUseCase.execute(projectId);
 
     if (isFailure(result)) {
       const err = getError(result);

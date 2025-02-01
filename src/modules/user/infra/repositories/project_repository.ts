@@ -2,9 +2,24 @@ import { Result, succeed } from 'src/core/result';
 import { Project } from '../../domain/entities/project';
 import { IProjectRepository } from '../../domain/repositories/IProjectRepository';
 import { Injectable } from '@nestjs/common';
-import { createClient } from '@libsql/client';
+import { createClient } from '@libsql/client/.';
 import { PrismaLibSQL } from '@prisma/adapter-libsql';
 import { PrismaClient } from '@prisma/client';
+import { JsonValue } from '@prisma/client/runtime/library';
+
+function convertJsonValueToStringArray(jsonValue: JsonValue): string[] {
+  // Check if the value is an array
+  if (Array.isArray(jsonValue)) {
+    // Ensure all elements in the array are strings
+    if (jsonValue.every((item) => typeof item === 'string')) {
+      return jsonValue; // Safe to cast
+    } else {
+      throw new Error('The JsonValue is not an array of strings.');
+    }
+  } else {
+    throw new Error('The JsonValue is not an array.');
+  }
+}
 
 @Injectable()
 export class projectRepository implements IProjectRepository {
@@ -32,6 +47,7 @@ export class projectRepository implements IProjectRepository {
           ? new Date(project.startDate.toString())
           : null,
         userId: project.userId,
+        keys: JSON.stringify(project.keys),
       },
     });
 
@@ -44,6 +60,7 @@ export class projectRepository implements IProjectRepository {
       repository_link: res.repository_link,
       startDate: res.startDate,
       userId: res.userId,
+      keys: convertJsonValueToStringArray(res.keys),
     };
     return succeed(created);
   }
@@ -63,6 +80,7 @@ export class projectRepository implements IProjectRepository {
         repository_link: x.repository_link,
         startDate: x.startDate,
         userId: x.userId,
+        keys: convertJsonValueToStringArray(x.keys),
       };
     });
 
@@ -85,6 +103,7 @@ export class projectRepository implements IProjectRepository {
       repository_link: projectFound.repository_link,
       startDate: projectFound.startDate,
       userId: projectFound.userId,
+      keys: convertJsonValueToStringArray(projectFound.keys),
     };
 
     return project;
@@ -104,6 +123,7 @@ export class projectRepository implements IProjectRepository {
         name: project.name,
         repository_link: project.repository_link,
         startDate: project.startDate,
+        keys: JSON.stringify(project.keys),
       },
     });
   }
