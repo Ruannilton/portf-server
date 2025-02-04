@@ -3,15 +3,14 @@ import { PassportModule } from '@nestjs/passport';
 import { GitHubStrategy } from './domain/strategies/github.strategy';
 import { AuthController } from './presentation/auth.controller';
 
-import { CreateGitHubFederatedUserUseCase } from './domain/use_cases/createGitHubFederatedUserUseCase';
-import { FindFederatedUserUseCase } from './domain/use_cases/findFederatedUserUseCase';
 import { UserModule } from '../user/user.module';
 import { IFederationRepository } from './domain/repository/federationRepository';
 import { FederationRepository } from './infra/repositories/federationRepository';
 import { JwtModule } from '@nestjs/jwt';
 import { LoginUserUseCase } from './domain/use_cases/loginUserUseCase';
 import { AuthGuard } from './domain/guards/authGuard';
-import { GetGitHubAccountUseCase } from './domain/use_cases/getGitHubAccountUseCase';
+import SignInFromGithubUseCase from './domain/use_cases/signInFromGithubUseCase';
+import GetFederationsUseCase from './domain/use_cases/getFederationsUseCase';
 
 @Module({
   imports: [
@@ -25,9 +24,8 @@ import { GetGitHubAccountUseCase } from './domain/use_cases/getGitHubAccountUseC
   controllers: [AuthController],
   providers: [
     GitHubStrategy,
-    CreateGitHubFederatedUserUseCase,
-    GetGitHubAccountUseCase,
-    FindFederatedUserUseCase,
+    SignInFromGithubUseCase,
+    GetFederationsUseCase,
     {
       provide: IFederationRepository,
       useClass: FederationRepository,

@@ -1,14 +1,16 @@
 import { Result, succeed } from 'src/core/result';
 import { User } from 'src/modules/user/domain/entities/user';
 import { IUserRepository } from 'src/modules/user/domain/repositories/user_repository';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { createClient } from '@libsql/client';
 import { PrismaLibSQL } from '@prisma/adapter-libsql';
 import { PrismaClient } from '@prisma/client';
+import withRetry from 'src/core/retry';
 
 @Injectable()
 export class UserRepository implements IUserRepository {
   private readonly prisma: PrismaClient;
+  private readonly logger = new Logger(UserRepository.name);
 
   constructor() {
     const libsql = createClient({
@@ -21,14 +23,19 @@ export class UserRepository implements IUserRepository {
   }
 
   async AddUser(user: User): Promise<Result<User>> {
-    const res = await this.prisma.user.create({
-      data: {
-        email: user.email,
-        name: user.name,
-        github: user.github,
-        linkedin: user.linkedIn,
-      },
-    });
+    const res = await withRetry(
+      () =>
+        this.prisma.user.create({
+          data: {
+            email: user.email,
+            name: user.name,
+            github: user.github,
+            linkedin: user.linkedIn,
+            bio: user.bio,
+          },
+        }),
+      this.logger,
+    );
 
     const userCreated: User = {
       id: res.id,
@@ -36,6 +43,7 @@ export class UserRepository implements IUserRepository {
       github: res.github,
       linkedIn: res.linkedin,
       name: res.name,
+      bio: res.bio,
       projects: [],
     };
 
@@ -45,7 +53,10 @@ export class UserRepository implements IUserRepository {
   }
 
   async GetUser(id: string): Promise<User | null> {
-    const user = await this.prisma.user.findFirst({ where: { id: id } });
+    const user = await withRetry(
+      () => this.prisma.user.findFirst({ where: { id: id } }),
+      this.logger,
+    );
 
     if (user == null) return null;
 
@@ -55,23 +66,32 @@ export class UserRepository implements IUserRepository {
       github: user.github,
       linkedIn: user.linkedin,
       name: user.name,
+      bio: user.bio,
       projects: [],
     };
   }
 
   async RemoveUser(id: string): Promise<void> {
-    await this.prisma.user.delete({ where: { id: id } });
+    await withRetry(
+      () => this.prisma.user.delete({ where: { id: id } }),
+      this.logger,
+    );
   }
 
   async UpdateUser(id: string, updatedUser: User): Promise<void> {
-    await this.prisma.user.update({
-      where: { id: id },
-      data: {
-        email: updatedUser.email,
-        github: updatedUser.github,
-        linkedin: updatedUser.linkedIn,
-        name: updatedUser.name,
-      },
-    });
+    await withRetry(
+      () =>
+        this.prisma.user.update({
+          where: { id: id },
+          data: {
+            email: updatedUser.email,
+            github: updatedUser.github,
+            linkedin: updatedUser.linkedIn,
+            name: updatedUser.name,
+            bio: updatedUser.bio,
+          },
+        }),
+      this.logger,
+    );
   }
 }

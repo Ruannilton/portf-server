@@ -1,23 +1,8 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Post,
-  Put,
-  Res,
-} from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Put, Res } from '@nestjs/common';
 import { GetUserUseCase } from '../../domain/use_cases/user/get_user';
 import { Response } from 'express';
 import { getError, getValue, isFailure } from 'src/core/result';
 import { DeleteUserUseCase } from '../../domain/use_cases/user/delete_user';
-import {
-  CreateUserMessage,
-  CreateUserUseCase,
-} from 'src/modules/user/domain/use_cases/user/create_user';
-import { CreateUserRequest } from './CreateUserRequest';
-import { CreateUseReponse } from './CreateUseReponse';
 import {
   UpateUserMessage,
   UpdateUserUseCase,
@@ -29,7 +14,6 @@ import { ApiBearerAuth } from '@nestjs/swagger';
 @ApiBearerAuth()
 export class UserController {
   constructor(
-    private readonly createUserUseCase: CreateUserUseCase,
     private readonly getUserUseCase: GetUserUseCase,
     private readonly updateUserUseCase: UpdateUserUseCase,
     private readonly deleteUserUseCase: DeleteUserUseCase,
@@ -47,23 +31,6 @@ export class UserController {
 
     const value = getValue(getResult);
     response.status(200).json(value);
-  }
-
-  @Post()
-  async addUser(@Body() body: CreateUserRequest, @Res() response: Response) {
-    const createUserMessage: CreateUserMessage = { ...body };
-    const addResult = await this.createUserUseCase.execute(createUserMessage);
-
-    if (isFailure(addResult)) {
-      const err = getError(addResult);
-      response.status(400).json(err);
-      return;
-    }
-
-    const user = getValue(addResult);
-    const userResponse = new CreateUseReponse(user);
-
-    response.status(201).json(userResponse);
   }
 
   @Put('/:id')

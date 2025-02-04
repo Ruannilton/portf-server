@@ -12,7 +12,8 @@ CREATE TABLE "User" (
     "name" TEXT NOT NULL,
     "email" TEXT NOT NULL,
     "linkedin" TEXT,
-    "github" TEXT,
+    "github" TEXT NOT NULL,
+    "bio" TEXT NOT NULL,
     "created_at" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" DATETIME NOT NULL
 );
@@ -24,9 +25,10 @@ CREATE TABLE "Project" (
     "brief" TEXT NOT NULL,
     "description" TEXT,
     "repository_link" TEXT,
-    "startDate" DATETIME,
+    "startDate" DATETIME NOT NULL,
     "endDate" DATETIME,
     "userId" TEXT NOT NULL,
+    "keys" JSONB NOT NULL,
     CONSTRAINT "Project_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
 );
 

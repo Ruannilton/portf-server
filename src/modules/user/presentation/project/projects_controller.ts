@@ -72,7 +72,7 @@ export class ProjectsController {
     response.status(200).json(value);
   }
 
-  @Post('/users/:userId')
+  @Post('/users/:userId/project')
   async postProject(
     @Param('userId') userId: string,
     @Body() body: CreateProjectRequest,
@@ -82,7 +82,7 @@ export class ProjectsController {
       userId: userId,
       ...body,
     };
-
+    console.log(message);
     const result = await this.createProjectUseCase.execute(message);
 
     if (isFailure(result)) {

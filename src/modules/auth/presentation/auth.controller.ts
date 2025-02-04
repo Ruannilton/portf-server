@@ -2,6 +2,7 @@ import {
   Controller,
   Get,
   Header,
+  Logger,
   Param,
   Req,
   Res,
@@ -9,24 +10,21 @@ import {
 } from '@nestjs/common';
 import { GitHubAuthGuard } from '../domain/guards/githubAuthGuard';
 import { GitHubUser } from '../domain/models/github_user';
-import { FindFederatedUserUseCase } from '../domain/use_cases/findFederatedUserUseCase';
-import { CreateGitHubFederatedUserUseCase } from '../domain/use_cases/createGitHubFederatedUserUseCase';
-import { LoginUserUseCase } from '../domain/use_cases/loginUserUseCase';
 import { AuthGuard } from '../domain/guards/authGuard';
 import { Response } from 'express';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { GetUserUseCase } from 'src/modules/user/domain/use_cases/user/get_user';
 import { getError, getValue, isFailure } from 'src/core/result';
-import { GetGitHubAccountUseCase } from '../domain/use_cases/getGitHubAccountUseCase';
+import SignInFromGithubUseCase from '../domain/use_cases/signInFromGithubUseCase';
+import GetFederationsUseCase from '../domain/use_cases/getFederationsUseCase';
 
 @Controller('auth')
 export class AuthController {
+  private readonly logger = new Logger(AuthController.name);
   constructor(
-    private readonly findFederationUseCase: FindFederatedUserUseCase,
-    private readonly createGitHubFederationUseCase: CreateGitHubFederatedUserUseCase,
-    private readonly loginUseCase: LoginUserUseCase,
     private readonly getUser: GetUserUseCase,
-    private readonly getGitHubAccount: GetGitHubAccountUseCase,
+    private readonly getFederations: GetFederationsUseCase,
+    private readonly signInFromGithub: SignInFromGithubUseCase,
   ) {}
 
   @Get('github')
@@ -39,36 +37,27 @@ export class AuthController {
   @Get('github/callback')
   @UseGuards(GitHubAuthGuard)
   @Header('Access-Control-Allow-Origin', '*')
-  async githubCallback(@Req() req): Promise<any> {
-    const gitUser: GitHubUser = req.user;
+  async githubCallback(@Req() req, @Res() response: Response): Promise<any> {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    const gitUser: GitHubUser = req.user as GitHubUser;
 
     if (gitUser == null) {
-      return {
-        message: 'Unexpected data from GitHub',
-        user: req.user,
-      };
+      this.logger.error('Data not provided by github');
+      response.sendStatus(400);
+      return;
     }
 
-    const user = await this.findFederationUseCase.execute('github', gitUser.id);
+    const authResult = await this.signInFromGithub.execute(gitUser);
 
-    if (user != null) {
-      const token = await this.loginUseCase.execute(user);
-      return token;
+    if (isFailure(authResult)) {
+      const error = getError(authResult);
+      this.logger.error('Error', error);
+      response.status(400).json(error);
+      return;
     }
 
-    const createdUser = await this.createGitHubFederationUseCase.execute(
-      gitUser.id,
-      gitUser,
-    );
-
-    if (createdUser == null) {
-      return {
-        message: 'Fail to create user',
-      };
-    }
-
-    const token = await this.loginUseCase.execute(createdUser);
-    return token;
+    const auth = getValue(authResult);
+    response.status(200).json(auth);
   }
 
   @Get('/me')
@@ -76,7 +65,8 @@ export class AuthController {
   @UseGuards(AuthGuard)
   @Header('Access-Control-Allow-Origin', '*')
   async me(@Req() req, @Res() response: Response) {
-    const userId = req.user.sub;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    const userId: string = req.user.sub as string;
     const userResult = await this.getUser.execute(userId);
 
     if (isFailure(userResult)) {
@@ -88,9 +78,10 @@ export class AuthController {
     response.status(200).json(user);
   }
 
-  @Get('/users/:id/github')
+  @Get('/users/:id/federations')
+  @ApiBearerAuth()
   async getGithubAccount(@Param('id') id: string, @Res() response: Response) {
-    const result = await this.getGitHubAccount.execute(id);
+    const result = await this.getFederations.execute(id);
 
     if (isFailure(result)) {
       const err = getError(result);

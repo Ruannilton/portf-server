@@ -19,10 +19,7 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "migrate:auth": "prisma migrate dev --schema=prisma/auth.schema.prisma",
-    "migrate:users": "prisma migrate dev --schema=prisma/users.schema.prisma",
-    "migrate-apply:auth": "prisma migrate deploy --schema=prisma/auth.schema.prisma",
-    "migrate-apply:users": "prisma migrate deploy --schema=prisma/users.schema.prisma"
+    "migrate": "prisma migrate dev"
   },
   "dependencies": {
     "@libsql/client": "^0.8.1",

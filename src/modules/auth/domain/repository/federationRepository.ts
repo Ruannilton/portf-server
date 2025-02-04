@@ -21,4 +21,6 @@ export abstract class IFederationRepository {
     provider: string,
     userId: string,
   ): Promise<Federation | null>;
+
+  public abstract listFederations(userId: string): Promise<Federation[]>;
 }

@@ -1,11 +1,9 @@
-export class Project {
+export interface ProfileProject {
   id: number;
   name: string;
   brief: string;
-  userId: string;
-  description: string | null;
-  repository_link: string | null;
   startDate: Date;
   endDate: Date | null;
   keys: string[];
+  repoLink: string | null;
 }

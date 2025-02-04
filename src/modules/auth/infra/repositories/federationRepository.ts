@@ -1,13 +1,15 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { IFederationRepository } from '../../domain/repository/federationRepository';
 import { createClient } from '@libsql/client';
 import { PrismaLibSQL } from '@prisma/adapter-libsql';
 import { PrismaClient } from '@prisma/client';
 import { Federation } from '../../domain/models/federation';
+import withRetry from 'src/core/retry';
 
 @Injectable()
 export class FederationRepository implements IFederationRepository {
   private readonly prisma: PrismaClient;
+  private readonly logger: Logger = new Logger(FederationRepository.name);
 
   constructor() {
     const libsql = createClient({
@@ -18,13 +20,37 @@ export class FederationRepository implements IFederationRepository {
     const adapter = new PrismaLibSQL(libsql);
     this.prisma = new PrismaClient({ adapter });
   }
+  public async listFederations(userId: string): Promise<Federation[]> {
+    const federations = await withRetry(
+      () =>
+        this.prisma.federation.findMany({
+          where: { userId },
+        }),
+      this.logger,
+    );
+
+    const response: Federation[] = federations.map((f) => {
+      return {
+        provider: f.provider,
+        providerRef: f.providerRef,
+        userId: f.userId,
+      };
+    });
+
+    return response;
+  }
+
   public async getFederation(
     provider: string,
     userId: string,
   ): Promise<Federation | null> {
-    const fed = await this.prisma.federation.findFirst({
-      where: { provider, userId },
-    });
+    const fed = await withRetry(
+      () =>
+        this.prisma.federation.findFirst({
+          where: { provider, userId },
+        }),
+      this.logger,
+    );
 
     if (fed != null) {
       const response: Federation = {
@@ -42,9 +68,13 @@ export class FederationRepository implements IFederationRepository {
     provider: string,
     providerRef: string,
   ): Promise<string | null> {
-    const fed = await this.prisma.federation.findFirst({
-      where: { provider, providerRef },
-    });
+    const fed = await withRetry(
+      () =>
+        this.prisma.federation.findFirst({
+          where: { provider, providerRef },
+        }),
+      this.logger,
+    );
 
     return fed?.userId ?? null;
   }
@@ -54,16 +84,24 @@ export class FederationRepository implements IFederationRepository {
     providerRef: string,
     userId: string,
   ): Promise<void> {
-    await this.prisma.federation.create({
-      data: { provider, providerRef, userId },
-    });
+    await withRetry(
+      () =>
+        this.prisma.federation.create({
+          data: { provider, providerRef, userId },
+        }),
+      this.logger,
+    );
   }
   public async deleteFederation(
     provider: string,
     providerRef: string,
   ): Promise<void> {
-    await this.prisma.federation.deleteMany({
-      where: { provider, providerRef },
-    });
+    await withRetry(
+      () =>
+        this.prisma.federation.deleteMany({
+          where: { provider, providerRef },
+        }),
+      this.logger,
+    );
   }
 }
